@@ -29,11 +29,13 @@ from src.routes.user import user_bp
 from src.routes.indicadores import indicadores_bp
 from src.routes.indicacoes import indicacoes_bp
 from src.routes.import_excel import import_bp
+from src.routes.relatorios import relatorios_bp
 
 app.register_blueprint(user_bp, url_prefix='/api')
 app.register_blueprint(indicadores_bp, url_prefix='/api')
 app.register_blueprint(indicacoes_bp, url_prefix='/api')
 app.register_blueprint(import_bp, url_prefix='/api')
+app.register_blueprint(relatorios_bp, url_prefix='/api')
 
 with app.app_context():
     db.create_all()
