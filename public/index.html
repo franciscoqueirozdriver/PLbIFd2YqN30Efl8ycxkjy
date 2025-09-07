@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>API — Online</title>
+    <!-- favicon explícito: evita GET automático em /favicon.ico -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="robots" content="noindex" />
+    <style>
+      :root { color-scheme: light dark; }
+      body { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; margin: 0; display: grid; min-height: 100svh; place-items: center; }
+      .card { padding: 24px 28px; border-radius: 16px; box-shadow: 0 8px 30px rgba(0,0,0,.08); max-width: 720px; }
+      h1 { margin: 0 0 8px; font-size: 1.4rem; }
+      code { background: rgba(127,127,127,.12); padding: 2px 6px; border-radius: 6px; }
+      .muted { opacity: .7; }
+      .row { margin-top: 12px; display: flex; gap: 12px; flex-wrap: wrap; }
+      a.btn { text-decoration: none; padding: 8px 12px; border-radius: 10px; border: 1px solid rgba(127,127,127,.3); }
+    </style>
+  </head>
+  <body>
+    <main class="card">
+      <h1>Backend online ✅</h1>
+      <p class="muted">Este projeto expõe rotas em <code>/api/*</code> (serverless Python/Flask).</p>
+      <div class="row">
+        <a class="btn" href="/api/_diag">/api/_diag</a>
+        <a class="btn" href="/api/indicacoes">/api/indicacoes</a>
+      </div>
+      <p class="muted">Dica: variáveis definidas no Vercel → Project Settings → Environment Variables.</p>
+    </main>
+  </body>
+</html>
