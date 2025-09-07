@@ -14,6 +14,17 @@ HEADERS = [
 def _total_rows():
     w = ws("Indicacoes"); return max(0, len(w.get_all_values()) - 1)
 
+@app.get("/")
+def get_indicacoes():
+    try:
+        records = ws("Indicacoes").get_all_records()
+        return ok(records)
+    except Exception as e:
+        return err(500, "INDICACOES_ERROR", "Erro ao buscar indicações", {
+            "error": str(e),
+            "trace": traceback.format_exc()
+        })
+
 @app.post("/")
 def create_indicacao():
     try:
