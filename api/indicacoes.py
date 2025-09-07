@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify
 import json, traceback
-from ._sheets import append_rows, ensure_headers, SheetSchemaError, ws
+from ._sheets import append_rows, ensure_headers, SheetSchemaError, ws, list_rows
 from ._utils import iso_now, ok, err, next_id
 
 app = Flask(__name__)
@@ -15,6 +15,27 @@ HEADERS = [
 def _total_rows():
     w = ws("Indicacoes")
     return max(0, len(w.get_all_values()) - 1)
+
+
+@app.get("/")
+def list_indicacoes():
+    try:
+        limit = max(1, min(200, int(request.args.get("limit", 50))))
+        cursor = max(0, int(request.args.get("cursor", 0)))
+        rows = list_rows("Indicacoes", HEADERS)
+        total = len(rows)
+        # ordena por created_at desc se existir; caso contrário, mantém ordem natural
+        try:
+            rows.sort(key=lambda r: r.get("created_at",""), reverse=True)
+        except Exception:
+            pass
+        page = rows[cursor:cursor+limit]
+        next_cursor = cursor + limit if cursor + limit < total else None
+        return jsonify(ok=True, data=page, total=total, cursor=next_cursor)
+    except SheetSchemaError as e:
+        return err(500, "SHEET_SCHEMA_ERROR", str(e))
+    except Exception as e:
+        return jsonify(ok=False, error={"code":"UNEXPECTED","message":str(e),"trace":traceback.format_exc()}), 500
 
 
 @app.post("/")
@@ -50,7 +71,7 @@ def create_indicacao():
             "created_at": now, "updated_at": now,
             "created_by": request.headers.get("X-User-Type","system"),
             "updated_by": request.headers.get("X-User-Type","system"),
-            "status": "active"
+            "status": "active",
         }
         append_rows("Indicacoes", [row], HEADERS)
 
@@ -69,24 +90,6 @@ def create_indicacao():
 
     except SheetSchemaError as e:
         return err(500, "SHEET_SCHEMA_ERROR", str(e))
-    except Exception as e:  # noqa: BLE001
+    except Exception as e:
         return jsonify(ok=False, error={"code":"UNEXPECTED","message":str(e),"trace":traceback.format_exc()}), 500
 
-
-@app.post("/_selftest")
-def selftest():
-    try:
-        total = _total_rows()
-        inc_id = next_id("INC", total + 1)
-        now = iso_now()
-        row = {
-            "indicacao_id": inc_id, "indicador_id": "IND_0000","data_indicacao": "2025-09-07",
-            "nome_indicado": "Teste","telefone_indicado": "+5511999999999","gerou_venda": False,
-            "faturamento_gerado": 0,"status_recompensa": "Nao","observacoes": "selftest",
-            "created_at": now,"updated_at": now,"created_by": "system","updated_by": "system","status": "active"
-        }
-        append_rows("Indicacoes", [row], HEADERS)
-        return ok({"id": inc_id}, status=201)
-    except Exception as e:  # noqa: BLE001
-        import traceback
-        return jsonify(ok=False, error=str(e), trace=traceback.format_exc()), 500

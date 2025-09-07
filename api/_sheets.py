@@ -53,3 +53,15 @@ def append_rows(tab: str, dicts: list[dict], expected_headers: list[str]):
                 delay *= 2
                 continue
             raise
+
+
+def list_rows(tab: str, expected_headers: list[str], status_active_only: bool = True):
+    w, got = ensure_headers(tab, expected_headers)
+    values = w.get_all_values()
+    rows = []
+    for raw in values[1:]:
+        row = dict(zip(got, raw + [""] * (len(got) - len(raw))))
+        rows.append(row)
+    if status_active_only:
+        rows = [r for r in rows if (r.get("status") or "active") != "archived"]
+    return rows
