@@ -1,0 +1,7 @@
+{
+    "routes": [
+        { "src": "/assets/(.*)", "dest": "/src/static/assets/$1" },
+        { "src": "/favicon.ico", "dest": "/src/static/favicon.ico" },
+        { "src": "/(.*)", "dest": "/src/static/index.html" }
+    ]
+}
