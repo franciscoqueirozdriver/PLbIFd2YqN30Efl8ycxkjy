@@ -43,10 +43,10 @@ def get_dashboard_stats():
             'faturamento_total': faturamento_total
         }
 
-        return ok(stats)
+        return jsonify(stats)
 
     except Exception as e:
-        return err(500, "DASHBOARD_ERROR", "Erro ao calcular estatísticas do dashboard", {
+        return jsonify(ok=False, error="DASHBOARD_ERROR", message=str(e), trace=traceback.format_exc()), 500
             "error": str(e),
             "trace": traceback.format_exc()
         })

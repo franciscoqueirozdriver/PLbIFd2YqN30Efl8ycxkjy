@@ -9,9 +9,6 @@ app = Flask(__name__)
 def get_indicadores():
     try:
         records = ws("Indicadores").get_all_records()
-        return ok(records)
+        return jsonify(records)
     except Exception as e:
-        return err(500, "INDICADORES_ERROR", "Erro ao buscar indicadores", {
-            "error": str(e),
-            "trace": traceback.format_exc()
-        })
+        return jsonify(ok=False, error="INDICADORES_ERROR", message=str(e), trace=traceback.format_exc()), 500

@@ -18,12 +18,9 @@ def _total_rows():
 def get_indicacoes():
     try:
         records = ws("Indicacoes").get_all_records()
-        return ok(records)
+        return jsonify(records)
     except Exception as e:
-        return err(500, "INDICACOES_ERROR", "Erro ao buscar indicações", {
-            "error": str(e),
-            "trace": traceback.format_exc()
-        })
+        return jsonify(ok=False, error="INDICACOES_ERROR", message=str(e), trace=traceback.format_exc()), 500
 
 @app.post("/")
 def create_indicacao():
