@@ -13,6 +13,7 @@ class IndicadorSchema(SQLAlchemyAutoSchema):
     nome = fields.Str(required=True, validate=validate.Length(min=1, max=255))
     telefone = fields.Str(required=True)
     email = fields.Email(allow_none=True)
+    empresa = fields.Str(allow_none=True, validate=validate.Length(max=255))
     created_at = fields.DateTime(dump_only=True)
     updated_at = fields.DateTime(dump_only=True)
     

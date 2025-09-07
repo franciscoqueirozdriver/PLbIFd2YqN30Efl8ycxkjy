@@ -11,6 +11,7 @@ class Indicador(db.Model):
     nome = Column(String(255), nullable=False)
     telefone = Column(String(20), nullable=False)
     email = Column(String(255), nullable=True)
+    empresa = Column(String(255), nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
