@@ -44,18 +44,16 @@ flask --app api/indicadores:app run
 Exemplos de chamadas após o deploy:
 
 ```bash
-# listar indicadores
-curl https://<deploy>/api/indicadores
+# Diagnóstico (deve mostrar headers de Indicacoes)
+curl -s https://SEU-DEPLOY.vercel.app/api/_diag | jq
 
-# criar indicador
-curl -X POST https://<deploy>/api/indicadores \
-  -H 'Content-Type: application/json' \
-  -d '{"nome":"João","telefone":"+5511999999999","email":"j@ex.com","empresa":"Tech"}'
+# Self-test (insere linha dummy)
+curl -s -X POST https://SEU-DEPLOY.vercel.app/api/indicacoes/_selftest | jq
 
-# criar indicação
-curl -X POST https://<deploy>/api/indicacoes \
-  -H 'Content-Type: application/json' \
-  -d '{"indicador_id":"IND_0001","data_indicacao":"2025-09-07","nome_indicado":"Maria","telefone_indicado":"+5511888888888","gerou_venda":true,"faturamento_gerado":150000,"status_recompensa":"EmProcessamento"}'
+# POST real
+curl -s -X POST https://SEU-DEPLOY.vercel.app/api/indicacoes \
+  -H "Content-Type: application/json" \
+  -d '{"indicador_id":"IND_0001","data_indicacao":"2025-09-07","nome_indicado":"Maria","telefone_indicado":"+5511888888888","gerou_venda":true,"faturamento_gerado":150000,"status_recompensa":"EmProcessamento"}' | jq
 ```
 
 ## Limitações / Próximos passos

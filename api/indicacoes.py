@@ -11,11 +11,8 @@ HEADERS = [
     "created_at","updated_at","created_by","updated_by","status"
 ]
 
-
 def _total_rows():
-    w = ws("Indicacoes")
-    return max(0, len(w.get_all_values()) - 1)
-
+    w = ws("Indicacoes"); return max(0, len(w.get_all_values()) - 1)
 
 @app.post("/")
 def create_indicacao():
@@ -27,8 +24,7 @@ def create_indicacao():
     try:
         req = ["indicador_id","data_indicacao","nome_indicado","telefone_indicado"]
         miss = [k for k in req if not str(payload.get(k) or "").strip()]
-        if miss:
-            return err(422, "VALIDATION_ERROR", "Campos obrigatórios ausentes", {"missing": miss})
+        if miss: return err(422, "VALIDATION_ERROR", "Campos obrigatórios ausentes", {"missing": miss})
 
         gv = bool(payload.get("gerou_venda", False))
         fat = float(payload.get("faturamento_gerado", 0) or 0)
@@ -39,9 +35,7 @@ def create_indicacao():
         if sr not in ("Nao","EmProcessamento","Sim"):
             return err(422, "VALIDATION_ERROR", "status_recompensa inválido", {"permitidos":["Nao","EmProcessamento","Sim"]})
 
-        total = _total_rows()
-        inc_id = next_id("INC", total + 1)
-        now = iso_now()
+        total = _total_rows(); inc_id = next_id("INC", total + 1); now = iso_now()
         row = {
             "indicacao_id": inc_id, "indicador_id": payload["indicador_id"],
             "data_indicacao": payload["data_indicacao"], "nome_indicado": payload["nome_indicado"],
@@ -62,23 +56,19 @@ def create_indicacao():
                 "acao": "insert","ator": request.headers.get("X-User-Type","system"),
                 "payload": json.dumps(payload, ensure_ascii=False),"timestamp": now
             }], ["log_id","tab","ref_id","acao","ator","payload","timestamp"])
-        except Exception:
-            pass
+        except Exception: pass
 
         return ok({"id": inc_id}, status=201)
 
     except SheetSchemaError as e:
         return err(500, "SHEET_SCHEMA_ERROR", str(e))
-    except Exception as e:  # noqa: BLE001
+    except Exception as e:
         return jsonify(ok=False, error={"code":"UNEXPECTED","message":str(e),"trace":traceback.format_exc()}), 500
-
 
 @app.post("/_selftest")
 def selftest():
     try:
-        total = _total_rows()
-        inc_id = next_id("INC", total + 1)
-        now = iso_now()
+        total = _total_rows(); inc_id = next_id("INC", total + 1); now = iso_now()
         row = {
             "indicacao_id": inc_id, "indicador_id": "IND_0000","data_indicacao": "2025-09-07",
             "nome_indicado": "Teste","telefone_indicado": "+5511999999999","gerou_venda": False,
@@ -87,6 +77,6 @@ def selftest():
         }
         append_rows("Indicacoes", [row], HEADERS)
         return ok({"id": inc_id}, status=201)
-    except Exception as e:  # noqa: BLE001
+    except Exception as e:
         import traceback
         return jsonify(ok=False, error=str(e), trace=traceback.format_exc()), 500

@@ -2,7 +2,7 @@ from flask import Flask, jsonify
 
 app = Flask(__name__)
 
-
 @app.get("/")
-def list_indicadores():
-    return jsonify(ok=True, service="indicadores")
+def get_indicadores():
+    # Placeholder
+    return jsonify(ok=True, service="api-indicadores")

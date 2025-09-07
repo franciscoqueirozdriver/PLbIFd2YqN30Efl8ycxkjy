@@ -1,14 +1,9 @@
-import os
-import time
-import gspread
+import os, time, gspread
 from google.oauth2.service_account import Credentials
 
 SCOPES = ["https://www.googleapis.com/auth/spreadsheets"]
 
-
-class SheetSchemaError(Exception):
-    ...
-
+class SheetSchemaError(Exception): ...
 
 def _client():
     key = os.environ["GOOGLE_PRIVATE_KEY"]
@@ -22,21 +17,16 @@ def _client():
     }, scopes=SCOPES)
     return gspread.authorize(creds)
 
-
 def ws(tab: str):
     sid = os.environ["SPREADSHEET_ID"]
     return _client().open_by_key(sid).worksheet(tab)
 
-
 def ensure_headers(tab: str, expected: list[str]):
-    w = ws(tab)
-    got = w.row_values(1)
+    w = ws(tab); got = w.row_values(1)
     missing = [h for h in expected if h not in got]
-    if missing or got[: len(expected)] != expected:
-        raise SheetSchemaError(
-            f"Aba '{tab}' inválida. Faltando: {missing}. Atuais: {got}. Esperado: {expected}")
+    if missing or got[:len(expected)] != expected:
+        raise SheetSchemaError(f"Aba '{tab}' inválida. Faltando: {missing}. Atuais: {got}. Esperado: {expected}")
     return w, got
-
 
 def append_rows(tab: str, dicts: list[dict], expected_headers: list[str]):
     w, _ = ensure_headers(tab, expected_headers)
@@ -44,12 +34,8 @@ def append_rows(tab: str, dicts: list[dict], expected_headers: list[str]):
     delay = 0.5
     for _ in range(5):
         try:
-            w.append_rows(rows, value_input_option="RAW")
-            return
-        except gspread.exceptions.APIError as e:  # noqa: BLE001
+            w.append_rows(rows, value_input_option="RAW"); return
+        except gspread.exceptions.APIError as e:
             code = getattr(getattr(e, "response", None), "status_code", 0)
-            if code in (429, 500, 503):
-                time.sleep(delay)
-                delay *= 2
-                continue
+            if code in (429, 500, 503): time.sleep(delay); delay *= 2; continue
             raise
